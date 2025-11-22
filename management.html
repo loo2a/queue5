@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإدارة - نظام نداء المرضى</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .modal {
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-tools text-2xl text-blue-600 ml-3"></i>
+                    <h1 class="text-xl font-bold text-gray-900">لوحة الإدارة</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="index.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        <i class="fas fa-home ml-1"></i>
+                        الرئيسية
+                    </a>
+                    <a href="display.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        <i class="fas fa-desktop ml-1"></i>
+                        شاشة العرض
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Settings Section -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fas fa-cog text-blue-600 ml-3"></i>
+                إعدادات النظام
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Center Settings -->
+                <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">بيانات المركز</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">اسم المركز</label>
+                            <input type="text" id="centerName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">سرعة النطق</label>
+                            <input type="range" id="audioSpeed" min="0.5" max="2" step="0.1" class="w-full">
+                            <div class="text-sm text-gray-500 mt-1">القيمة الحالية: <span id="speedValue">1.0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Settings -->
+                <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">إعدادات الصوت</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">مسار ملفات الصوت</label>
+                            <input type="text" id="audioPath" placeholder="https://..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">مسار الفيديوهات</label>
+                            <input type="text" id="mediaPath" placeholder="https://..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="enableTTS" class="ml-2">
+                            <label class="text-sm font-medium text-gray-700">تمكين TTS كبديل</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Display Settings -->
+                <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">إعدادات العرض</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">شريط الأخبار</label>
+                            <textarea id="newsTicker" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="نص شريط الأخبار المتحرك..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button id="saveSettings" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-semibold transition-colors">
+                    <i class="fas fa-save ml-2"></i>
+                    حفظ الإعدادات
+                </button>
+            </div>
+        </div>
+
+        <!-- Clinics Management -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-clinic-medical text-blue-600 ml-3"></i>
+                    إدارة العيادات
+                </h2>
+                <button id="addClinicBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-semibold transition-colors">
+                    <i class="fas fa-plus ml-2"></i>
+                    إضافة عيادة
+                </button>
+            </div>
+
+            <!-- Clinics Table -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الرقم</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">كلمة السر</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الرقم الحالي</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clinicsTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Clinics will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Emergency Call -->
+            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-600 ml-2"></i>
+                    نداء طارئ
+                </h3>
+                <div class="space-y-3">
+                    <input type="text" id="emergencyText" placeholder="نص النداء الطارئ..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <button id="emergencyCallBtn" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md font-semibold transition-colors">
+                        إرسال نداء طارئ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Direct Call -->
+            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-bullhorn text-blue-600 ml-2"></i>
+                    نداء مباشر
+                </h3>
+                <div class="space-y-3">
+                    <select id="directCallClinic" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">اختر العيادة</option>
+                    </select>
+                    <input type="number" id="directCallNumber" placeholder="رقم العميل" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button id="directCallBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition-colors">
+                        نداء مباشر
+                    </button>
+                </div>
+            </div>
+
+            <!-- TTS Test -->
+            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-volume-up text-green-600 ml-2"></i>
+                    اختبار TTS
+                </h3>
+                <div class="space-y-3">
+                    <input type="text" id="ttsText" placeholder="نص للنطق..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <button id="ttsTestBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold transition-colors">
+                        نطق النص
+                    </button>
+                </div>
+            </div>
+
+            <!-- Audio Broadcast -->
+            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-microphone text-purple-600 ml-2"></i>
+                    إذاعة صوتية
+                </h3>
+                <div class="space-y-3">
+                    <select id="instantAudio" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="">اختر ملف صوتي</option>
+                    </select>
+                    <button id="broadcastBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md font-semibold transition-colors">
+                        إذاعة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Clinic Modal -->
+    <div id="clinicModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4" id="modalTitle">إضافة عيادة</h3>
+            <form id="clinicForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">اسم العيادة</label>
+                        <input type="text" id="clinicName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">رقم العيادة</label>
+                        <input type="number" id="clinicNumber" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">كلمة السر</label>
+                        <input type="password" id="clinicPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">اللون</label>
+                        <input type="color" id="clinicColor" value="#3B82F6" class="w-full h-10 border border-gray-300 rounded-md">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="cancelBtn" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        حفظ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/management.js"></script>
+</body>
+</html>
