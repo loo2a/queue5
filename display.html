@@ -35,6 +35,19 @@
         .notification-banner {
             animation: slideDown 0.5s ease-out;
         }
+        /* تنسيق خاص لكروت العيادات */
+        #clinicCards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+            height: calc(100% - 180px); /* Space for QR code */
+            overflow: hidden; /* No scroll */
+        }
+        /* Auto-adjust card height based on number of items */
+        #clinicCards > div {
+            min-height: 70px;
+            max-height: 120px;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-900 to-indigo-900 text-white overflow-hidden">
@@ -210,7 +223,7 @@
             }
         }
 
-        // Render clinic cards
+        // Render clinic cards - تصميم جديد محسّن
         function renderClinics() {
             const container = document.getElementById('clinicCards');
             container.innerHTML = '';
@@ -220,34 +233,53 @@
                 return;
             }
 
+            // Calculate optimal card height based on number of clinics
+            const maxClinics = 8; // Maximum clinics visible without scroll
+            const activeClinics = clinicsData.filter(c => c.isActive || true); // Show all for now
+            
             clinicsData.forEach(clinic => {
-                if (!clinic.isActive) return;
-                
                 const card = document.createElement('div');
                 card.id = `clinic-${clinic.id}`;
-                card.className = 'bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4 shadow-lg transform transition-all duration-300 hover:scale-105';
+                
+                // Different styling for active/inactive
+                const isActive = clinic.isActive !== false; // Default to active if not specified
+                const baseClasses = 'rounded-lg p-3 shadow-lg transform transition-all duration-300';
+                const activeClasses = isActive 
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:scale-105' 
+                    : 'bg-gray-400 opacity-60';
+                
+                card.className = `${baseClasses} ${activeClasses}`;
+                
+                // Status icon and color
+                const statusIcon = isActive ? '🟢' : '⏸️';
+                const statusText = isActive ? 'نشط' : 'متوقف';
+                const statusColor = isActive ? 'bg-green-500' : 'bg-red-500';
+                
                 card.innerHTML = `
+                    <!-- السطر الأول: اسم العيادة + الرقم الحالي -->
                     <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-xl font-bold">${clinic.name}</h3>
-                            <span class="text-lg font-semibold text-blue-200">#${clinic.number}</span>
+                        <h3 class="text-lg font-bold truncate flex-1">${clinic.name}</h3>
+                        <div class="text-4xl font-bold bg-white text-blue-900 rounded px-3 py-1 ml-2 min-w-[60px] text-center">
+                            ${clinic.currentTicket || '---'}
                         </div>
                     </div>
-                    <div class="text-5xl font-bold text-center py-4 bg-white text-blue-900 rounded-lg shadow-inner mb-2">
-                        ${clinic.currentTicket || '---'}
-                    </div>
-                    <div class="flex justify-between text-xs text-blue-100">
-                        <span class="bg-green-500 px-2 py-1 rounded-full">🟢 نشط</span>
-                        <span id="clinic-time-${clinic.id}">
-                            ${clinic.lastCall ? new Date(clinic.lastCall).toLocaleTimeString('ar-EG', {hour: '2-digit', minute: '2-digit'}) : '---'}
+                    
+                    <!-- السطر الثاني: الحالة + آخر نداء -->
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="${statusColor} px-2 py-1 rounded-full font-semibold flex items-center gap-1">
+                            ${statusIcon} ${statusText}
+                        </span>
+                        <span class="text-blue-100" id="clinic-time-${clinic.id}">
+                            ${clinic.lastCall ? '🕐 ' + new Date(clinic.lastCall).toLocaleTimeString('ar-EG', {hour: '2-digit', minute: '2-digit'}) : 'لم يتم النداء'}
                         </span>
                     </div>
                 `;
+                
                 container.appendChild(card);
             });
         }
 
-        // Highlight clinic card
+        // Highlight clinic card - تحديث للتصميم الجديد
         function highlightClinic(clinicId) {
             // Remove previous highlights
             document.querySelectorAll('.active-call').forEach(card => {
@@ -256,8 +288,10 @@
 
             const card = document.getElementById(`clinic-${clinicId}`);
             if (card) {
+                // Add highlight effect
                 card.classList.add('active-call');
                 
+                // Remove highlight after 5 seconds
                 setTimeout(() => {
                     card.classList.remove('active-call');
                 }, 5000);
