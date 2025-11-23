@@ -27,9 +27,9 @@ class DisplayPage {
         try {
             // In a real implementation, you would load this from Firebase or a media list
             this.mediaFiles = [
-                { name: 'توعية صحية 1', type: 'video', src: 'health_awareness_1.mp4' },
-                { name: 'إعلان طبي', type: 'video', src: 'medical_ad.mp4' },
-                { name: 'نصائح صحية', type: 'video', src: 'health_tips.mp4' }
+                { name: 'توعية صحية 1', type: 'video', src: '.mp4' },
+                { name: 'إعلان طبي', type: 'video', src: '2.mp4' },
+                { name: 'نصائح صحية', type: 'video', src: '3.mp4' }
             ];
         } catch (error) {
             console.error('Error loading media files:', error);
